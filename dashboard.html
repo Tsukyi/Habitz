@@ -1,0 +1,216 @@
+{% extends "layout.html"%}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block main %}
+
+<div class="mb-3">
+<h4><strong>Welcome to <b>Habitz</b></strong>.</h4>
+<p class="text-muted mb-0">Where your habits get redefined.</p>
+</div>
+
+<!-- Tabs -->
+<ul class="nav nav-tabs" id="dashboardTabs">
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#current">
+      Current Tasks
+    </button>
+  </li>
+
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#search">
+      Search Tasks
+    </button>
+  </li>
+
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#completed">
+      Completed Tasks
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content mt-3">
+
+<!-- CURRENT TASKS -->
+<div class="tab-pane fade show active" id="current">
+
+<table class="table">
+<thead>
+<tr>
+<th>#</th>
+<th>Task</th>
+<th>Start Date</th>
+<th>Deadline</th>
+<th>Days</th>
+</tr>
+</thead>
+
+<tbody>
+{% for task in tasks %}
+<tr>
+<td>{{ loop.index }}</td>
+<td>{{ task["name"] }}</td>
+<td>{{ task["start_date"] }}</td>
+<td class="check-deadline">{{ task["end_date"] }}</td>
+<td>{{ task["duration"] }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+</div>
+
+<!-- SEARCH TASKS -->
+<div class="tab-pane fade" id="search">
+
+<input type="text" id="taskSearch" class="form-control mb-3" placeholder="Search tasks...">
+
+<table class="table" id="searchTable">
+<thead>
+<tr>
+<th>#</th>
+<th>Task</th>
+<th>Start Date</th>
+<th>End Date</th>
+</tr>
+</thead>
+
+<tbody>
+{% for task in tasks %}
+<tr>
+<td>{{ loop.index }}</td>
+<td>{{ task["name"] }}</td>
+<td>{{ task["start_date"] }}</td>
+<td class="check-deadline">{{ task["end_date"] }}</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+</div>
+
+<!-- COMPLETED TASKS -->
+<div class="tab-pane fade" id="completed">
+
+<input type="text" id="taskSearch2" class="form-control mb-3" placeholder="Search tasks...">
+
+<table class="table" id="searchTable2">
+<thead>
+<tr>
+<th>#</th>
+<th>Task</th>
+<th>Date Completed</th>
+</tr>
+</thead>
+
+<tbody>
+{% for task in completed %}
+<tr>
+<td>{{ loop.index }}</td>
+<td>{{ task["habit_name"] }}</td>
+<td class="check-completed"
+    data-deadline="{{ task['end_date'] }}"
+    data-completed="{{ task['date_completed'] }}">
+    {{ task["date_completed"] }}
+</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<!-- Search JS -->
+<script>
+document.getElementById("taskSearch").addEventListener("keyup", function() {
+
+let filter = this.value.toLowerCase();
+let rows = document.querySelectorAll("#searchTable tbody tr");
+
+rows.forEach(row => {
+let text = row.innerText.toLowerCase();
+row.style.display = text.includes(filter) ? "" : "none";
+});
+
+});
+
+document.getElementById("taskSearch2").addEventListener("keyup", function() {
+
+let filter = this.value.toLowerCase();
+let rows = document.querySelectorAll("#searchTable2 tbody tr");
+
+rows.forEach(row => {
+let text = row.innerText.toLowerCase();
+row.style.display = text.includes(filter) ? "" : "none";
+});
+
+});
+
+document.querySelectorAll(".check-deadline").forEach(cell => {
+    let deadline = new Date(cell.innerText);
+    let today = new Date();
+
+    deadline.setHours(0,0,0,0);
+    today.setHours(0,0,0,0);
+
+    let in3Days = new Date();
+    in3Days.setDate(today.getDate() + 3);
+    in3Days.setHours(0,0,0,0);
+
+    cell.innerHTML = cell.innerText;
+
+    if (deadline < today) {
+
+        cell.classList.add("text-danger");
+        cell.innerHTML += " <span class='badge bg-danger'>Overdue</span>";
+        cell.fontWeight = "bold";
+    }
+    else if (deadline.getTime() === today.getTime()) {
+
+        cell.classList.add("text-primary");
+        cell.innerHTML += " <span class='badge bg-primary'>Due Today</span>";
+        cell.fontWeight = "bold";
+    }
+    else if (deadline > today && deadline <= in3Days) {
+
+        cell.classList.add("text-warning");
+        cell.innerHTML += " <span class='badge bg-warning'>Due Soon</span>";
+        cell.fontWeight = "bold";
+    }
+    else {
+        cell.classList.add("text-success");
+        cell.innerHTML += " <span class='badge bg-success'>On Track</span>";
+        cell.fontWeight = "bold";
+    }
+});
+
+document.querySelectorAll(".check-completed").forEach(cell => {
+    let completedDate = new Date(cell.dataset.completed);
+    let deadline = new Date(cell.dataset.deadline);
+
+    if (completedDate < deadline) {
+        cell.classList.add("text-success");
+        cell.innerHTML += " <span class='badge bg-success'>Completed Early</span>";
+        cell.fontWeight = "bold";
+    }
+    else if (completedDate.getTime() === deadline.getTime()) {
+        cell.classList.add("text-warning");
+        cell.innerHTML += " <span class='badge bg-warning'>Completed On Time</span>";
+        cell.fontWeight = "bold";
+    }
+    else {
+        cell.classList.add("text-danger");
+        cell.innerHTML += " <span class='badge bg-danger'>Completed Late</span>";
+        cell.fontWeight = "bold";
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,242 @@
+{% extends "layout.html" %}
+{% block title %}Settings{% endblock %}
+{% block main %}
+
+<div class="container py-4" style="max-width: 860px;">
+
+  <div class="mb-4">
+    <p class="shadows-into-light-two-regular">Hello👋, {{ name }}!</p>
+  </div>
+
+  <!-- Header -->
+  <div class="mb-4">
+    <h2>Settings</h2>
+    <p class="text-muted mb-0">Manage your account, security, and data preferences.</p>
+  </div>
+
+  <!-- Flash Messages -->
+  {% if error_message %}
+    <div class="alert alert-danger alert-dismissible fade show">
+      {{ error_message }}
+      <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endif %}
+  {% if success_message %}
+    <div class="alert alert-success alert-dismissible fade show">
+      {{ success_message }}
+      <button class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  {% endif %}
+
+  <!-- ═══ PROFILE ═══ -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header fw-semibold">
+      <i class="fa-solid fa-user me-2 text-primary"></i>Profile
+    </div>
+    <div class="card-body">
+      <form method="post" action="/settings">
+        <input type="hidden" name="action" value="update_username">
+
+        <label class="form-label">Username</label>
+        <p class="form-text text-muted">Enter a new username for your account.</p>
+        <input type="text" class="form-control mb-3" name="username" placeholder="Enter new username">
+
+        <div class="text-end">
+          <button class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk me-1"></i>Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══ SECURITY ═══ -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header fw-semibold">
+      <i class="fa-solid fa-lock me-2 text-primary"></i>Security
+    </div>
+    <div class="card-body">
+
+      <form method="post" action="/settings">
+        <input type="hidden" name="action" value="change_password">
+
+        <label class="form-label">Password</label>
+        <p class="form-text text-muted">Update your current password.</p>
+        <input type="password" class="form-control mb-3" name="current_password" placeholder="Current password" required>
+        <input type="password" class="form-control mb-3" name="new_password" placeholder="New password" required>
+        <input type="password" class="form-control mb-3" name="confirm_password" placeholder="Confirm password" required>
+
+        <div class="text-end">
+          <button class="btn btn-primary">
+            <i class="fa-solid fa-key me-1"></i>Update Password
+          </button>
+        </div>
+      </form>
+
+      <hr>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <small class="text-muted">Forgot your password?</small>
+        <a href="/reset" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-link me-1"></i>Reset</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ DATA ═══ -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header fw-semibold">
+      <i class="fa-solid fa-database me-2 text-primary"></i>Data
+    </div>
+    <div class="card-body">
+
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <div class="fw-medium">Reset Streaks</div>
+          <small class="text-muted">Clears all streak counters</small>
+        </div>
+        <form method="post" action="/settings">
+          <input type="hidden" name="action" value="reset_streaks">
+          <button type="button" class="btn btn-outline-warning btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#resetModal">
+            <i class="fa-solid fa-arrow-rotate-left me-1"></i>
+            Reset
+          </button>
+        </form>
+      </div>
+
+      <hr>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-medium">Clear History</div>
+          <small class="text-muted">Deletes all completion logs</small>
+        </div>
+        <form method="post" action="/settings">
+          <input type="hidden" name="action" value="clear_completions">
+          <button type="button"
+            class="btn btn-outline-secondary btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#clearModal">
+            <i class="fa-solid fa-trash me-1"></i>
+            Clear
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ DANGER ZONE ═══ -->
+  <div class="card border-danger shadow-sm">
+    <div class="card-header bg-danger text-white fw-semibold"><i class="fa-solid fa-circle-exclamation"></i>
+      Account Deletion
+    </div>
+    <div class="card-body">
+
+      <p class="text-danger small">
+        This action is permanent and cannot be undone.
+      </p>
+
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-semibold">Delete Account</div>
+          <small class="text-muted">Remove all your data permanently</small>
+        </div>
+
+        <button class="btn btn-danger btn-sm"
+          data-bs-toggle="modal"
+          data-bs-target="#deleteModal"><i class="fa-regular fa-circle-xmark"></i>
+          Delete
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal stays the same -->
+
+<!-- Modal for reset streaks-->
+ <div class="modal fade" id="resetModal" tabindex="-1" aria-labelledby="resetModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-warning">
+      <div class="modal-header bg-warning text-white">
+        <h5 class="modal-title" id="resetModalLabel"> <i class="fa-solid fa-arrow-rotate-left me-2"></i>Confirm Streak Reset </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to reset all your streaks?</p>
+        <p class="small text-muted mb-0">This will set all your current streaks back to zero but will not delete any completion history.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="post" action="/settings" class="d-inline">
+          <input type="hidden" name="action" value="reset_streaks">
+          <button type="submit" class="btn btn-warning">
+            <i class="fa-solid fa-arrow-rotate-left me-1"></i>Yes, Reset Streaks
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for log clear-->
+ <div class="modal fade" id="clearModal" tabindex="-1" aria-labelledby="clearModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-secondary">
+      <div class="modal-header bg-secondary text-white">
+        <h5 class="modal-title" id="clearModalLabel"> <i class="fa-solid fa-trash me-2"></i>Confirm History Clear </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to clear your completion history?</p>
+        <p class="small text-muted mb-0">This will delete all your habit completion logs but will not affect your current streaks.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="post" action="/settings" class="d-inline">
+          <input type="hidden" name="action" value="clear_completions">
+          <button type="submit" class="btn btn-danger">
+            <i class="fa-solid fa-trash me-1"></i>Yes, Clear History
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ Delete Confirmation Modal ════ -->
+ <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-danger">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteModalLabel"> <i class="fa-solid fa-triangle-exclamation me-2"></i>Confirm Account Deletion </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">Are you absolutely sure you want to delete your account?</p>
+        <ul class="small text-muted ps-3 mb-0">
+          <li>All habits and streaks will be deleted</li>
+          <li>All completion history will be removed</li>
+          <li>Your login activity will be erased</li>
+          <li>This action <strong>cannot</strong> be undone</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form method="post" action="/settings" class="d-inline">
+          <input type="hidden" name="action" value="delete_account">
+          <button type="submit" class="btn btn-danger">
+            <i class="fa-solid fa-trash me-1"></i>Yes, Delete Everything
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

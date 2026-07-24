@@ -1,0 +1,373 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&display=swap');
+
+.task-card {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    position: relative;
+}
+
+.task-card.fade-out {
+    opacity: 0;
+    transform: translateY(-15px);
+}
+.modal-content {
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.custom-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: black;
+    cursor: pointer;
+}
+
+#habitz {
+
+    font-size: 1.5rem;
+    font-weight: 500;
+
+}
+#habitz:hover, .custom-close:hover {
+    font-style: bold;
+    background: #EEAECA;
+    background: linear-gradient(nulldeg, rgba(238, 174, 202, 1) 0%, rgba(148, 187, 233, 1) 100%);
+    background-size: 200% auto;
+      /* 2. Clip the background to the shape of the text */
+    -webkit-background-clip: text;
+    background-clip: text;
+
+  /* 3. Make the text transparent so the background shows through */
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+
+  /* 4. Apply the animation */
+    animation: gradient-animation 2s linear infinite;
+}
+
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center; /* Animate the background position across the text */
+  }
+}
+
+.task-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 2 columns */
+    gap: 20px;
+    padding: 20px;
+}
+
+.task-card {
+    position: relative;
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--bs-border-color);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    text-align: center;
+}
+
+.streak-flame {
+    margin-left: 8px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ff6b00;
+    background: rgba(255, 107, 0, 0.1);
+    padding: 4px 8px;
+    border-radius: 20px;
+}
+.streak-flame {
+    display: inline-block;
+    margin-left: 8px;
+    font-weight: bold;
+    color: #ff6b00;
+    animation: flicker 1.5s infinite alternate;
+}
+
+@keyframes flicker {
+    0% {
+        transform: scale(1);
+        opacity: 0.9;
+        text-shadow: 0 0 4px rgba(255, 100, 0, 0.6);
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(255, 80, 0, 0.9);
+    }
+    100% {
+        transform: scale(0.98);
+        opacity: 0.85;
+        text-shadow: 0 0 6px rgba(255, 120, 0, 0.7);
+    }
+}
+
+@media (max-width: 600px) {
+    .task-grid {
+        grid-template-columns: 1fr; /* 1 column on small screens */
+    }
+}
+
+.active:hover{
+    color: #f1697a;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(4, end) infinite;
+}
+
+@keyframes dots {
+  0%   { content: ''; }
+  25%  { content: '.'; }
+  50%  { content: '..'; }
+  75%  { content: '...'; }
+  100% { content: ''; }
+}
+
+.desc_just {
+    text-align: left;
+
+}
+
+.edit-icon {
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    bottom: 5px;
+    right: 8px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.edit-icon:hover {
+    opacity: 1;
+}
+
+.heart-icon {
+    position: absolute;
+    bottom: 4px;
+    right: 40px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.heart-icon:hover{
+    opacity: 1;
+}
+
+.heart-icon.hearted {
+    color: red;
+    transform: scale(1.1);
+}
+
+.sort-wrapper {
+    display: inline-block;
+    position: relative;
+}
+
+#sort-select {
+    z-index: 1000; /* make sure it’s above other elements */
+}
+
+.dark-mode {
+    background-color: black;
+    color: white;
+}
+
+#theme-icon.nav-link img,
+.nav-item .nav-link img {
+    padding: 0 !important;   /* Remove Bootstrap padding */
+    margin-top: 3px;         /* Lower the icon slightly */
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@media (min-width: 768px) {
+    #theme-icon {
+        margin-top: 3px;  /* lower it slightly on larger screens */
+    }
+}
+
+.level-progress-wrapper {
+    display: flex;
+    justify-content: center; /* centers the progress bar horizontally */
+    margin-top: 8px;
+}
+
+.level-progress {
+    width: 300px; /* or any width you prefer */
+    height: 10px;
+    background: #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg,#ff7b00,#ff0000,#9b30ff);
+    transition: width 0.4s ease;
+}
+
+.next-level {
+    font-size: 13px;
+    text-align: center; /* center the text under the bar */
+    margin-top: 4px;
+    color: #666;
+}
+
+.streak-flame {
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+/* Beginner */
+.flame-beginner {
+    color: #ff7b00;
+}
+
+/* Bronze */
+.flame-bronze {
+    color: #cd7f32;
+}
+
+/* Silver */
+.flame-silver {
+    color: #c0c0c0; /* silver */
+    text-shadow:
+        0 0 4px #000000,       /* stronger black outline for visibility */
+        0 0 2px rgba(192,192,192,0.3);/* subtle silver glow */
+    font-weight: bold;
+}
+
+.flame-gold {
+    color: #bfa500; /* darker gold */
+    text-shadow:
+        0 0 2px #000000,   /* subtle black outline */
+        0 0 5px rgba(191,165,0,0.8); /* golden glow */
+    font-weight: bold;
+}
+
+/* Mythic */
+.flame-mythic {
+    color: #9b30ff;
+    text-shadow: 0 0 15px rgba(155,48,255,1);
+    animation: mythicPulse 1.5s infinite alternate;
+}
+
+.flame-master {
+    color: #ff00ff;
+    text-shadow: 0 0 10px rgba(255,0,255,1);
+    animation: challengerPulse 1.5s infinite alternate;
+}
+
+.flame-challenger {
+    color: #ff0000;
+    text-shadow: 0 0 10px rgba(255,0,0,1);
+    animation: challengerPulse 1.5s infinite alternate;
+}
+.streak-level {
+    margin-left: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+@keyframes mythicPulse {
+    0% {
+        text-shadow: 0 0 10px rgba(155,48,255,0.8);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(155,48,255,1);
+    }
+    100% {
+        text-shadow: 0 0 10px rgba(155,48,255,0.8);
+    }
+}
+
+.beginner{
+    color: #ff7b00;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.bronze{
+    color: #cd7f32;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.silver{
+    color: #c0c0c0; /* silver */
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+.gold{
+    color: #bfa500;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.mythic{
+    color: #9b30ff;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.master{
+    color: #ff00ff;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.challenger{
+    color: #ff0000;
+    text-shadow: 0 0 10px rgba(255,0,0,1);
+    animation: challengerPulse 1.5s infinite alternate;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+@keyframes challengerPulse {
+    0% {
+        text-shadow: 0 0 10px rgba(255,0,0,0.8);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(255,0,0,1);
+    }
+    100% {
+        text-shadow: 0 0 10px rgba(255,0,0,0.8);
+    }
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.site-footer{
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-weight: bold;
+}
+.shadows-into-light-two-regular {
+  font-family: "Shadows Into Light Two", cursive;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 48px;
+}

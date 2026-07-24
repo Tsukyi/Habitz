@@ -1,0 +1,364 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Overview
+{% endblock %}
+
+{% block main %}
+{% if completed_count >= 1000 %}
+    {% set level = "Challenger" %}
+    {% set next_level = "Max" %}
+    {% set progress = 100 %}
+{% elif completed_count >= 500 %}
+    {% set level = "Master" %}
+    {% set next_level = 1000 %}
+    {% set progress = ((completed_count - 500) / 500) * 100 %}
+{% elif completed_count >= 200 %}
+    {% set level = "Mythic" %}
+    {% set next_level = 500 %}
+    {% set progress = ((completed_count - 200) / 300) * 100 %}
+{% elif completed_count >= 150 %}
+    {% set level = "Gold" %}
+    {% set next_level = 200 %}
+    {% set progress = ((completed_count - 150) / 50) * 100 %}
+{% elif completed_count >= 100 %}
+    {% set level = "Silver" %}
+    {% set next_level = 150 %}
+    {% set progress = ((completed_count - 100) / 50) * 100 %}
+{% elif completed_count >= 50 %}
+    {% set level = "Bronze" %}
+    {% set next_level = 100 %}
+    {% set progress = ((completed_count - 50) / 50) * 100 %}
+{% else %}
+    {% set level = "Beginner" %}
+    {% set next_level = 50 %}
+    {% set progress = (completed_count / 50) * 100 %}
+{% endif %}
+{% set flame_class = "" %}
+{% if level == "Beginner" %}
+    {% set flame_class = "flame-beginner" %}
+{% elif level == "Bronze" %}
+    {% set flame_class = "flame-bronze" %}
+{% elif level == "Silver" %}
+    {% set flame_class = "flame-silver" %}
+{% elif level == "Gold" %}
+    {% set flame_class = "flame-gold" %}
+{% elif level == "Mythic" %}
+    {% set flame_class = "flame-mythic" %}
+{% elif level == "Master" %}
+    {% set flame_class = "flame-master" %}
+{% elif level == "Challenger" %}
+    {% set flame_class = "flame-challenger" %}
+{% endif %}
+
+<h2 class="task-heading">
+    Your Tasks
+</h2>
+    <span class="streak-flame {{ flame_class }}">🔥 {{ completed_count }}</span>
+    <span class="streak-level {{ level.lower() }}">{{ level }}</span>
+
+<div class="level-progress-wrapper">
+    <div class="level-progress">
+        <div class="progress-bar-fill" style="width: {{ progress }}%;"></div>
+    </div>
+</div>
+
+{% set next_level_name = "" %}
+{% if next_level == 50 %}
+    {% set next_level_name = "Bronze" %}
+{% elif next_level == 100 %}
+    {% set next_level_name = "Silver" %}
+{% elif next_level == 150 %}
+    {% set next_level_name = "Gold" %}
+{% elif next_level == 200 %}
+    {% set next_level_name = "Mythic" %}
+{% elif next_level == 500 %}
+    {% set next_level_name = "Master" %}
+{% elif next_level == 1000 %}
+    {% set next_level_name = "Challenger" %}
+{% endif %}
+
+{% if next_level != "Max" %}
+<p class="next-level">
+    {{ next_level - completed_count }} tasks to {{ next_level_name }} level upgrade
+</p>
+{% else %}
+<p class="next-level">Maximum level reached 🔮</p>
+{% endif %}
+<div class="d-flex align-items-center">
+    <div class="ms-auto sort-wrapper d-inline-flex align-items-center gap-2">
+        <i class="fa-solid fa-filter" id="filter-toggle" style="cursor:pointer; font-size:20px;" title="Filter"></i>
+        <select id="sort-select" class="form-select w-auto" style="display:block;">
+            <option value="favorite" {% if current_sort=="favorite" %}selected{% endif %}>Favorites</option>
+            <option value="start_asc" {% if current_sort=="start_asc" %}selected{% endif %}>Start Date ↑</option>
+            <option value="start_desc" {% if current_sort=="start_desc" %}selected{% endif %}>Start Date ↓</option>
+            <option value="end_asc" {% if current_sort=="end_asc" %}selected{% endif %}>Deadline ↑</option>
+            <option value="end_desc" {% if current_sort=="end_desc" %}selected{% endif %}>Deadline ↓</option>
+            <option value="alpha_asc" {% if current_sort=="alpha_asc" %}selected{% endif %}>A → Z</option>
+            <option value="alpha_desc" {% if current_sort=="alpha_desc" %}selected{% endif %}>Z → A</option>
+        </select>
+    </div>
+</div>
+<script>
+    const filterIcon = document.getElementById('filter-toggle');
+const sortSelect = document.getElementById('sort-select');
+
+filterIcon.addEventListener('click', () => {
+    if(sortSelect.style.display === 'none' || sortSelect.style.display === '') {
+        sortSelect.style.display = 'block';
+    } else {
+        sortSelect.style.display = 'none';
+    }
+});
+
+sortSelect.addEventListener('change', function(){
+    const sort = this.value;
+    window.location.href = `/overview?sort=${sort}`;
+});
+
+document.addEventListener('click', function(event){
+    if(!filterIcon.contains(event.target) && !sortSelect.contains(event.target)){
+        sortSelect.style.display = 'none';
+    }
+});
+
+</script>
+<div class="task-grid">
+    {% for task in tasks %}
+    <div class="task-card position-relative" data-task-id="{{ task['id'] }}">
+        <!-- Delete button -->
+        <button type="button"
+                class="custom-close"
+                data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop"
+                data-task-id="{{ task['id'] }}"
+                title="Delete Task">
+            &times;
+        </button>
+
+        <h3>
+        {{ task['name'] }}
+        {% if task['days_left'] > 0 %}
+            <span class="streak-flame">⏳ {{ task['days_left'] }} days</span>
+        {% else %}
+            <span class="streak-flame text-danger">⚠️ Due</span>
+        {% endif %}
+        </h3>
+
+        <p class="desc_just"><b>Description:</b> {{ task['description'] }}</p>
+        <p class="desc_just"><b>Start Date:</b> {{ task['start_date'] }}</p>
+        <p class="desc_just"><b>Deadline:</b> {{ task['end_date'] }}</p>
+
+        <!-- heart icon -->
+        <i class="fa-heart heart-icon
+        {% if task['favorite'] == 1 %}fa-solid hearted{% else %}fa-regular{% endif %}"
+        data-id="{{ task['id'] }}"
+        title="Favorite Task"></i>
+
+        <!-- Edit Icon -->
+        <i class="fa-regular fa-pen-to-square edit-icon"
+        data-id="{{ task['id'] }}"
+        data-name="{{ task['name'] }}"
+        data-desc="{{ task['description'] }}"
+        data-start="{{ task['start_date'] }}"
+        data-end="{{ task['end_date'] }}"
+        title="Edit Task"></i>
+            </div>
+    {% endfor %}
+</div>
+<script>
+const media = window.matchMedia('(prefers-color-scheme: dark)');
+
+function updateIcons(e) {
+    document.querySelectorAll(".edit-icon").forEach(img => {
+        if (e.matches) {
+            img.src = "/static/lightedit.png";     // icon for dark background
+        } else {
+            img.src = "/static/pen-to-square-regular.png"; // icon for light background
+        }
+    });
+}
+
+updateIcons(media);
+media.addEventListener("change", updateIcons);
+</script>
+<script>
+    document.querySelectorAll('.heart-icon').forEach(icon => {
+
+    icon.addEventListener('click', function(){
+
+        const card = this.closest('.task-card');
+        const container = document.querySelector('.task-grid');
+        const taskId = this.dataset.id;
+
+        // Toggle appearance
+        this.classList.toggle("fa-solid");
+        this.classList.toggle("fa-regular");
+        this.classList.toggle("hearted");
+
+        // Move card to top
+        container.prepend(card);
+
+        // Update database
+        const formData = new FormData();
+        formData.append("task_id", taskId);
+
+        fetch("/overview/favorite", {
+            method: "POST",
+            body: formData
+        });
+    });
+
+});
+</script>
+
+<!-- Edit Task Modal -->
+<div class="modal fade" id="editTaskModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title, loading-dots">Edit Task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="edit-form" method="POST" action="/overview/edit">
+            <input type="hidden" name="id" id="edit-task-id">
+
+            <div class="mb-3">
+                <label class="form-label">Task Name</label>
+                <input type="text" name="name" class="form-control" id="edit-task-name">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <input type="text" name="description" class="form-control" id="edit-task-desc">
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Start Date</label>
+                    <input type="date" name="start_date" class="form-control" id="edit-task-start">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Deadline</label>
+                    <input type="date" name="end_date" class="form-control" id="edit-task-end">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+const editModal = new bootstrap.Modal(document.getElementById('editTaskModal'));
+const editForm = document.getElementById('edit-form');
+
+document.querySelectorAll('.edit-icon').forEach(icon => {
+    icon.addEventListener('click', function() {
+        const id = this.getAttribute('data-id');
+        const name = this.getAttribute('data-name');
+        const desc = this.getAttribute('data-desc');
+        const start = this.getAttribute('data-start');
+        const end = this.getAttribute('data-end');
+
+        // Fill the modal inputs
+        document.getElementById('edit-task-id').value = id;
+        document.getElementById('edit-task-name').value = name;
+        document.getElementById('edit-task-desc').value = desc;
+        document.getElementById('edit-task-start').value = start;
+        document.getElementById('edit-task-end').value = end;
+
+        // Show the modal
+        editModal.show();
+    });
+});
+</script>
+
+<!-- Modal -->
+<div class="modal fade"
+     id="staticBackdrop"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false"
+     tabindex="-1">
+
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h1 class="modal-title fs-5">
+            Have you completed this task?
+        </h1>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p>
+          Click <b>"Done"</b> if you've completed the task,
+          or <b>"Close"</b> to keep it pending.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+            Close
+        </button>
+
+        <form method="POST" action="/overview" id="done-form">
+            <input type="hidden" name="done" id="task-id-input">
+            <button type="submit" class="btn btn-primary">
+                Done
+            </button>
+        </form>
+
+        <script>
+document.getElementById("done-form").addEventListener("submit", function(e) {
+
+    // Fire confetti BEFORE submission
+    confetti({
+        particleCount: 120,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
+
+    // Optional: small delay so user sees it
+    e.preventDefault();
+
+    setTimeout(() => {
+        this.submit();
+    }, 400);
+});
+</script>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+<!-- JavaScript -->
+<script>
+const modal = document.getElementById('staticBackdrop');
+
+modal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const taskId = button.getAttribute('data-task-id');
+    document.getElementById('task-id-input').value = taskId;
+});
+</script>
+
+
+{% endblock %}

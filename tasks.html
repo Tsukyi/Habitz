@@ -1,0 +1,88 @@
+{% extends "layout.html"%}
+
+{% block title %}
+    Tasks
+{% endblock %}
+
+{% block main %}
+<div class="container mt-4">
+
+  <div class="card shadow-sm">
+    <div class="card-header">
+      <h5 class="mb-0"><span class="loading-dots">Add New Task</span></h5>
+    </div>
+
+    <div class="card-body">
+      <form action="/tasks" method="post">
+
+        <div class="mb-3">
+          <input name="task" type="text" class="form-control"
+          placeholder="Add your task now" autocomplete="off">
+        </div>
+
+        <div class="mb-3">
+          <input name="description" type="text" class="form-control"
+          placeholder="Add your description now" autocomplete="off">
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Start Date</label>
+            <input name="startdate" id="startdate" type="date" class="form-control">
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <label class="form-label">Deadline</label>
+            <input name="enddate" id="enddate" type="date" class="form-control">
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Days to Complete</label>
+          <input name="days" id="days" type="number" class="form-control" readonly>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          + Add Task
+        </button>
+
+      </form>
+    </div>
+
+  </div>
+
+</div>
+      <script>
+      function getDaysBetween(startdate, enddate) {
+          const oneDay = 24 * 60 * 60 * 1000;
+          const firstDate = new Date(startdate);
+          const secondDate = new Date(enddate);
+
+          const diffDays = Math.round((secondDate - firstDate) / oneDay) + 1;
+          return diffDays;
+      }
+
+      document.getElementById("startdate").addEventListener("change", calculateDays);
+      document.getElementById("enddate").addEventListener("change", calculateDays);
+
+      function calculateDays() {
+          const start = document.getElementById("startdate").value;
+          const end = document.getElementById("enddate").value;
+
+          if (start && end) {
+              const days = getDaysBetween(start, end);
+
+              // Prevent negative values
+              if (days > 0) {
+                  document.getElementById("days").value = days;
+              } else {
+                  document.getElementById("days").value = 0;
+              }
+          }
+      }
+      </script>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
